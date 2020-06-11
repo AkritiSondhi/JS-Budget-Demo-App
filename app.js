@@ -69,7 +69,9 @@ var UIController = (function () {
     var type = document.querySelector(_domStrings.inputType).value;
     var description = document.querySelector(_domStrings.inputDescription)
       .value;
-    var value = document.querySelector(_domStrings.inputValue).value;
+    var value = parseFloat(
+      document.querySelector(_domStrings.inputValue).value
+    );
 
     return {
       type: type,
@@ -82,7 +84,7 @@ var UIController = (function () {
     return _domStrings;
   };
 
-  var addListItem = function (obj, type) {
+  var _addListItem = function (obj, type) {
     var html, element;
 
     if (type === "inc") {
@@ -102,11 +104,25 @@ var UIController = (function () {
     document.querySelector(element).insertAdjacentHTML("beforeend", html);
   };
 
+  var _clearFields = function () {
+    var fields = document.querySelectorAll(
+      _domStrings.inputDescription + "," + _domStrings.inputValue
+    );
+    var fieldsArray = Array.prototype.slice.call(fields);
+
+    fieldsArray.forEach(function (element, index, array) {
+      element.value = "";
+    });
+
+    fieldsArray[0].focus();
+  };
+
   // Public methods
   return {
     getInput: _getInput,
     getDomStrings: _getDomStrings,
-    addListItem: addListItem,
+    addListItem: _addListItem,
+    clearFields: _clearFields,
   };
 })();
 
@@ -130,7 +146,7 @@ var appController = (function (_budgetController, _UIController) {
     _setUpEventListeners();
   };
 
-  var addItem = function () {
+  var _addItem = function () {
     /**
      * TODO
      * 1. Get input field
@@ -142,13 +158,20 @@ var appController = (function (_budgetController, _UIController) {
     var input, newItem;
 
     input = _UIController.getInput();
-    newItem = _budgetController.addItem(
-      input.type,
-      input.description,
-      input.value
-    );
-    _UIController.addListItem(newItem, input.type);
+
+    if (input.description != "" && !isNaN(input.value) && input.value > 0) {
+      newItem = _budgetController.addItem(
+        input.type,
+        input.description,
+        input.value
+      );
+      _UIController.addListItem(newItem, input.type);
+      _UIController.clearFields();
+      _updateBudget();
+    }
   };
+
+  var _updateBudget = function () {};
 
   // Public methods
   return {
