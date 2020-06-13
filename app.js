@@ -77,11 +77,23 @@ var budgetController = (function () {
     };
   };
 
+  var _deleteItem = function (type, id) {
+    var ids = data.allItems[type].map(function (current) {
+      return current.id;
+    });
+    var index = ids.indexOf(id);
+
+    if (index >= 0) {
+      data.allItems[type].splice(index, 1);
+    }
+  };
+
   // Public methods
   return {
     addItem: addItem,
     calculateBudget: _calculateBudget,
     getBudget: _getBudget,
+    deleteItem: _deleteItem,
     testing: function () {
       console.log(data);
     },
@@ -101,6 +113,7 @@ var UIController = (function () {
     incomeLabel: ".budget__income--value",
     expensesLabel: ".budget__expenses--value",
     percentageLabel: ".budget__expenses--percentage",
+    container: ".container",
   };
 
   var _getInput = function () {
@@ -193,6 +206,22 @@ var appController = (function (_budgetController, _UIController) {
         _addItem();
       }
     });
+
+    var _deleteItem = function (event) {
+      var itemId = event.target.parentNode.parentNode.parentNode.parentNode.id;
+
+      if (itemId) {
+        var splitId = itemId.split("-");
+        var type = splitId[0] == "income" ? "inc" : "exp";
+        var id = splitId[1];
+
+        _budgetController.deleteItem(type, parseInt(id));
+      }
+    };
+
+    document
+      .querySelector(_domStrings.container)
+      .addEventListener("click", _deleteItem);
   };
 
   var _init = function () {
