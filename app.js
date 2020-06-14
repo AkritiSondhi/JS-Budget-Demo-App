@@ -182,6 +182,11 @@ var UIController = (function () {
     }
   };
 
+  var _deleteListItem = function (selectorId) {
+    var element = document.getElementById(selectorId);
+    element.parentNode.removeChild(element);
+  };
+
   // Public methods
   return {
     getInput: _getInput,
@@ -189,6 +194,7 @@ var UIController = (function () {
     addListItem: _addListItem,
     clearFields: _clearFields,
     displayBudget: _displayBudget,
+    deleteListItem: _deleteListItem,
   };
 })();
 
@@ -216,6 +222,8 @@ var appController = (function (_budgetController, _UIController) {
         var id = splitId[1];
 
         _budgetController.deleteItem(type, parseInt(id));
+        _UIController.deleteListItem(itemId);
+        _updateBudget();
       }
     };
 
